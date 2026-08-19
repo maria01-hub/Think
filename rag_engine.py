@@ -1,4 +1,6 @@
 import os
+import sqlite3
+from datetime import datetime
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -61,7 +63,7 @@ def build_qa_chain(vector_store):
 
     retriever = vector_store.as_retriever(
         search_type="similarity",
-        search_kwargs={"k": 4}   # retrieve top 4 relevant chunks
+        search_kwargs={"k": 4}
     )
 
     prompt_template = """You are a helpful assistant answering questions based ONLY on the provided context.
@@ -95,3 +97,54 @@ def answer_question(qa_chain, question):
     answer = result["result"]
     sources = result["source_documents"]
     return answer, sources
+
+
+# --- History database functions ---
+
+def init_history_db():
+    """Create the history table if it doesn't exist yet."""
+    conn = sqlite3.connect("history.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doc_name TEXT,
+            question TEXT,
+            answer TEXT,
+            timestamp TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+def save_to_history(doc_name, question, answer):
+    """Save one question-answer pair to the history database."""
+    conn = sqlite3.connect("history.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO history (doc_name, question, answer, timestamp) VALUES (?, ?, ?, ?)",
+        (doc_name, question, answer, datetime.now().strftime("%Y-%m-%d %H:%M"))
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_history():
+    """Retrieve all past question-answer pairs, most recent first."""
+    conn = sqlite3.connect("history.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT doc_name, question, answer, timestamp FROM history ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+
+def get_uploaded_documents():
+    """Get a list of unique document names that have been uploaded before."""
+    conn = sqlite3.connect("history.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT doc_name FROM history ORDER BY doc_name")
+    rows = cursor.fetchall()
+    conn.close()
+    return [row[0] for row in rows]
