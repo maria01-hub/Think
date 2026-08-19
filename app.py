@@ -8,7 +8,7 @@ from rag_engine import (
     answer_question
 )
 
-st.set_page_config(page_title="Document Q&A Chatbot", page_icon="📄")
+st.set_page_config(page_title="Think_Chatbot", page_icon="🧠")
 st.title("🧠 Think")
 st.caption("Upload a PDF and ask questions about it — powered by RAG")
 
