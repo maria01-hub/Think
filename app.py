@@ -16,15 +16,15 @@ st.set_page_config(page_title="Think_Chatbot", page_icon="🧠")
 # --- Theme definitions ---
 THEMES = {
     "Light": {"bg": "#FFFFFF", "sidebar_bg": "#F5F3FF", "text": "#1E1B2E", "primary": "#7C3AED"},
-    "Dark": {"bg": "#0E0E10", "sidebar_bg": "#1A1A1D", "text": "#F2F2F2", "primary": "#A78BFA"},
+    "Dark": {"bg": "#000000", "sidebar_bg": "#0A0A0A", "text": "#FFFFFF", "primary": "#FFFFFF"},
 }
 
 if "theme_choice" not in st.session_state:
     st.session_state.theme_choice = "Dark"
 if "custom_bg" not in st.session_state:
-    st.session_state.custom_bg = "#0E0E10"
+    st.session_state.custom_bg = "#000000"
 if "custom_text" not in st.session_state:
-    st.session_state.custom_text = "#F2F2F2"
+    st.session_state.custom_text = "#FFFFFF"
 if "custom_primary" not in st.session_state:
     st.session_state.custom_primary = "#7C3AED"
 
@@ -55,6 +55,7 @@ with st.sidebar:
 
 # --- Inject CSS for the chosen theme ---
 st.markdown(f"""
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <style>
     .stApp {{
         background-color: {active['bg']};
@@ -65,8 +66,13 @@ st.markdown(f"""
     }}
     .stButton>button {{
         background-color: {active['primary']};
-        color: white;
+        color: {active['bg']};
         border: none;
+        font-weight: 700;
+    }}
+    h1 {{
+        font-family: 'Anton', sans-serif !important;
+        letter-spacing: 1px;
     }}
     h1, h2, h3, p, span, label, .stMarkdown {{
         color: {active['text']} !important;
