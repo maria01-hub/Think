@@ -10,7 +10,7 @@ from rag_engine import (
 
 st.set_page_config(page_title="Think_Chatbot", page_icon="🧠")
 st.title("🧠 Think")
-st.caption("Upload a PDF and ask questions about it — powered by RAG")
+st.caption("Upload a PDF and ask questions about it")
 
 # Session state to persist chain across reruns
 if "qa_chain" not in st.session_state:
