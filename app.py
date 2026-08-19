@@ -20,7 +20,7 @@ THEMES = {
 }
 
 if "theme_choice" not in st.session_state:
-    st.session_state.theme_choice = "Light"
+    st.session_state.theme_choice = "Dark"
 if "custom_bg" not in st.session_state:
     st.session_state.custom_bg = "#0E0E10"
 if "custom_text" not in st.session_state:
@@ -70,6 +70,13 @@ st.markdown(f"""
     }}
     h1, h2, h3, p, span, label, .stMarkdown {{
         color: {active['text']} !important;
+    }}
+    [data-testid="stFileUploaderDropzoneInstructions"] {{
+        color: {active['primary']} !important;
+    }}
+    [data-testid="stFileUploaderDropzoneInstructions"] span,
+    [data-testid="stFileUploaderDropzoneInstructions"] small {{
+        color: {active['primary']} !important;
     }}
     </style>
 """, unsafe_allow_html=True)
