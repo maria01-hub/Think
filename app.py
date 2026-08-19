@@ -55,8 +55,11 @@ with st.sidebar:
 
 # --- Inject CSS for the chosen theme ---
 st.markdown(f"""
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+    html, body, .stApp, [class*="css"] {{
+        font-family: 'Poppins', sans-serif !important;
+    }}
     .stApp {{
         background-color: {active['bg']};
         color: {active['text']};
@@ -68,7 +71,8 @@ st.markdown(f"""
         background-color: {active['primary']};
         color: {active['bg']};
         border: none;
-        font-weight: 700;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif !important;
     }}
     h1 {{
         font-family: 'Anton', sans-serif !important;
@@ -78,11 +82,14 @@ st.markdown(f"""
         color: {active['text']} !important;
     }}
     [data-testid="stFileUploaderDropzoneInstructions"] {{
-        color: {active['primary']} !important;
+        color: {active['text']} !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 500;
     }}
     [data-testid="stFileUploaderDropzoneInstructions"] span,
     [data-testid="stFileUploaderDropzoneInstructions"] small {{
-        color: {active['primary']} !important;
+        color: {active['text']} !important;
+        font-family: 'Poppins', sans-serif !important;
     }}
     </style>
 """, unsafe_allow_html=True)
