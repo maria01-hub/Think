@@ -13,6 +13,8 @@ from rag_engine import (
 
 st.set_page_config(page_title="Think_Chatbot", page_icon="🧠")
 
+MAX_FILE_SIZE_MB = 5
+
 # --- Theme definitions ---
 THEMES = {
     "Light": {"bg": "#FFFFFF", "sidebar_bg": "#F5F3FF", "text": "#1E1B2E", "primary": "#7C3AED"},
@@ -98,7 +100,6 @@ st.markdown(f"""
 st.title("🧠 Think")
 st.caption("Upload a PDF and ask questions about it — powered by RAG")
 
-# Make sure the history database exists
 init_history_db()
 
 if "qa_chain" not in st.session_state:
@@ -111,25 +112,33 @@ if "current_doc_name" not in st.session_state:
 # --- Sidebar: Upload + History ---
 with st.sidebar:
     st.header("Upload Document")
+    st.caption(f"⚠️ Max file size: {MAX_FILE_SIZE_MB}MB (free hosting has limited memory)")
     uploaded_file = st.file_uploader("Choose a PDF", type="pdf")
 
     if uploaded_file and st.button("Process Document"):
-        with st.spinner("Reading and indexing document..."):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-                tmp.write(uploaded_file.read())
-                tmp_path = tmp.name
+        file_size_mb = uploaded_file.size / (1024 * 1024)
 
-            try:
-                chunks = load_and_split_pdf(tmp_path)
-                vector_store = create_vector_store(chunks)
-                st.session_state.qa_chain = build_qa_chain(vector_store)
-                st.session_state.messages = []
-                st.session_state.current_doc_name = uploaded_file.name
-                st.success(f"Document processed! ({len(chunks)} chunks indexed)")
-            except ValueError as e:
-                st.error(f"⚠️ {e} Please try a text-based PDF instead.")
-            finally:
-                os.unlink(tmp_path)
+        if file_size_mb > MAX_FILE_SIZE_MB:
+            st.error(f"⚠️ This file is {file_size_mb:.1f}MB, which is too large. Please upload a PDF under {MAX_FILE_SIZE_MB}MB.")
+        else:
+            with st.spinner("Reading and indexing document..."):
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                    tmp.write(uploaded_file.read())
+                    tmp_path = tmp.name
+
+                try:
+                    chunks = load_and_split_pdf(tmp_path)
+                    vector_store = create_vector_store(chunks)
+                    st.session_state.qa_chain = build_qa_chain(vector_store)
+                    st.session_state.messages = []
+                    st.session_state.current_doc_name = uploaded_file.name
+                    st.success(f"Document processed! ({len(chunks)} chunks indexed)")
+                except ValueError as e:
+                    st.error(f"⚠️ {e} Please try a text-based PDF instead.")
+                except Exception as e:
+                    st.error(f"⚠️ Something went wrong: {e}")
+                finally:
+                    os.unlink(tmp_path)
 
     st.divider()
     st.header("📜 Past Questions")
