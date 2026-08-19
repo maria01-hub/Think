@@ -20,7 +20,7 @@ THEMES = {
 }
 
 if "theme_choice" not in st.session_state:
-    st.session_state.theme_choice = "Dark"
+    st.session_state.theme_choice = st.query_params.get("theme", "Dark")
 if "custom_bg" not in st.session_state:
     st.session_state.custom_bg = "#000000"
 if "custom_text" not in st.session_state:
@@ -37,6 +37,7 @@ with st.sidebar:
         index=["Light", "Dark", "Custom"].index(st.session_state.theme_choice)
     )
     st.session_state.theme_choice = theme_choice
+    st.query_params["theme"] = theme_choice
 
     if theme_choice == "Custom":
         st.session_state.custom_bg = st.color_picker("Background color", st.session_state.custom_bg)
