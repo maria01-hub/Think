@@ -29,6 +29,9 @@ def load_and_split_pdf(pdf_path):
 
 def create_vector_store(chunks, persist_directory="chroma_db"):
     """Embed chunks and store them in ChromaDB."""
+    if not chunks:
+        raise ValueError("No readable text found in this PDF. It may be a scanned/image-only document.")
+
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )

@@ -28,7 +28,7 @@ if "custom_text" not in st.session_state:
 if "custom_primary" not in st.session_state:
     st.session_state.custom_primary = "#7C3AED"
 
-# --- Sidebar: theme picker (placed first so it applies before rendering the rest) ---
+# --- Sidebar: theme picker ---
 with st.sidebar:
     st.header("🎨 Appearance")
     theme_choice = st.selectbox(
@@ -119,14 +119,17 @@ with st.sidebar:
                 tmp.write(uploaded_file.read())
                 tmp_path = tmp.name
 
-            chunks = load_and_split_pdf(tmp_path)
-            vector_store = create_vector_store(chunks)
-            st.session_state.qa_chain = build_qa_chain(vector_store)
-            st.session_state.messages = []
-            st.session_state.current_doc_name = uploaded_file.name
-            os.unlink(tmp_path)
-
-        st.success(f"Document processed! ({len(chunks)} chunks indexed)")
+            try:
+                chunks = load_and_split_pdf(tmp_path)
+                vector_store = create_vector_store(chunks)
+                st.session_state.qa_chain = build_qa_chain(vector_store)
+                st.session_state.messages = []
+                st.session_state.current_doc_name = uploaded_file.name
+                st.success(f"Document processed! ({len(chunks)} chunks indexed)")
+            except ValueError as e:
+                st.error(f"⚠️ {e} Please try a text-based PDF instead.")
+            finally:
+                os.unlink(tmp_path)
 
     st.divider()
     st.header("📜 Past Questions")
